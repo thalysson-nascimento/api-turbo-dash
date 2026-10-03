@@ -1,4 +1,8 @@
 import { PrismaClient } from '@prisma/client';
+import { existsSync } from 'node:fs';
+import { configureDatabaseEnv } from './database-env.mjs';
+if (existsSync('.env')) process.loadEnvFile('.env');
+configureDatabaseEnv();
 const db = new PrismaClient();
 const items = [
   ['life','Vida Extra','Arme uma nova chance ou use após a batida.',1000,0,0],

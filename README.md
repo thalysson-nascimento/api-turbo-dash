@@ -37,7 +37,7 @@ O script de Editor `ApiNetworkSettings.cs` configura automaticamente a permissã
 ## Publicar na Vercel
 
 1. Importe este projeto na Vercel como Next.js e selecione Node.js 22/24.
-2. Configure um banco **PostgreSQL persistente** e a variável `DATABASE_URL` com sua conexão. Use uma conexão com pooling quando oferecida pelo provedor. SQLite local não deve ser usado na Vercel.
+2. Configure um banco **PostgreSQL persistente** e a variável `PRISMA_DATABASE_URL` com sua conexão. A API também aceita `POSTGRES_URL` e `DATABASE_URL`, nessa ordem de prioridade. Não é necessário duplicar a secret como `DATABASE_URL`: o build, as migrações e a API fazem essa adaptação automaticamente. Use uma conexão com pooling quando oferecida pelo provedor. SQLite local não deve ser usado na Vercel. Mantenha as credenciais nas variáveis da Vercel, nunca em arquivos versionados.
 3. O comando de build padrão é `npm run build`; ele gera o Prisma Client PostgreSQL e compila o Next.js.
 4. Antes de abrir o app aos usuários, rode `npm run db:deploy` com a `DATABASE_URL` do banco de produção. Isso aplica as migrações e cadastra os oito produtos, preservando preços que você já tiver alterado no banco. Não configure migrações concorrentes em todo preview de build.
 5. Se houver um cliente WebGL/navegador, configure `ALLOWED_ORIGINS` com suas origens completas, separadas por vírgula. Android/Unity nativo não necessita dessa variável.

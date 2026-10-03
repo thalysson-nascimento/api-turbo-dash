@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
-    "build": "prisma generate && next build",
-    "build:local": "prisma generate --schema prisma/local/schema.prisma && next build",
+    "build": "node scripts/prisma.mjs generate && next build",
+    "build:local": "node scripts/prisma.mjs generate --schema prisma/local/schema.prisma && next build",
     "start": "next start --hostname 0.0.0.0",
-    "db:local": "prisma generate --schema prisma/local/schema.prisma && prisma migrate deploy --schema prisma/local/schema.prisma && node scripts/seed.mjs",
-    "db:deploy": "prisma generate && prisma migrate deploy && node scripts/seed.mjs",
+    "db:local": "node scripts/prisma.mjs generate --schema prisma/local/schema.prisma && node scripts/prisma.mjs migrate deploy --schema prisma/local/schema.prisma && node scripts/seed.mjs",
+    "db:deploy": "node scripts/prisma.mjs generate && node scripts/prisma.mjs migrate deploy && node scripts/seed.mjs",
     "test": "node --test tests/api.test.mjs",
     "typecheck": "tsc --noEmit"
   },
