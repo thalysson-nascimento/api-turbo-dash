@@ -57,6 +57,10 @@ async function handle(request: Request, context: { params: Promise<{ path: strin
   } catch (error) {
     const status = error instanceof ApiError ? error.status : error instanceof z.ZodError ? 400 : 500;
     const message = error instanceof ApiError ? error.message : error instanceof z.ZodError ? "Campos inválidos. Confira nome, iniciais, e-mail, senha e valores enviados." : "Não foi possível concluir a operação.";
+    if (new URL(request.url).pathname === "/api/v1/ads/admob/ssv") {
+      // Do not log callback tokens, signatures, user IDs or the full URL.
+      console.warn("ADMOB_SSV_REJECTED", { status, reason: message });
+    }
     if (status === 500) console.error("API operation failed", error instanceof Error ? error.name : "unknown");
     return Response.json({ error: message }, { status, headers: headers(request) });
   }

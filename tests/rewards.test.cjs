@@ -60,3 +60,20 @@ test('five server-verified videos pay once, cancellation and duplicates never ov
   const nextDay=await rewards.dailyStatus(user.id);assert.equal(nextDay.remaining,5);assert.equal(nextDay.claimed,false);assert.equal(nextDay.player.balance,5000);
  } finally { await db.user.delete({where:{id:user.id}}); }
 });
+
+test('console probe requires a valid signature and cannot credit a reward', async () => {
+ const { publicKey, privateKey } = generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
+ const originalFetch = global.fetch;
+ const isolated = load('ad-rewards', { './db': { db: new Proxy({}, { get() { throw new Error('Probe must not access database'); } }) }, './api': { ...api, transaction() { throw new Error('Probe must not credit'); } } });
+ global.fetch = async () => Response.json({ keys: [{ keyId: 1, pem: publicKey.export({ type: 'spki', format: 'pem' }) }] });
+ const callback = query => new Request('https://example.com/api/v1/ads/admob/ssv?' + query + '&signature=' + sign('sha256', Buffer.from(query), privateKey).toString('base64url') + '&key_id=1');
+ try {
+  const query = 'ad_unit=1234567890&reward_amount=1&reward_item=Reward&timestamp=1791047616719&transaction_id=123456789';
+  assert.deepEqual(await isolated.admobCallback(callback(query)), { ignored: true, test: true });
+  const forged = new Request(callback(query).url.replace('reward_amount=1', 'reward_amount=2'));
+  await assert.rejects(() => isolated.admobCallback(forged), /Assinatura inválida/);
+  await assert.rejects(() => isolated.admobCallback(callback(query + '&custom_data=' + 'a'.repeat(64))), /Unidade de anúncio inválida/);
+  await assert.rejects(() => isolated.admobCallback(callback(query.replace('1234567890', '9999999999'))), /Unidade de anúncio inválida/);
+  assert.deepEqual(await isolated.admobCallback(callback(query.replace('1234567890', '1406515156'))), { ignored: true });
+ } finally { global.fetch = originalFetch; }
+});

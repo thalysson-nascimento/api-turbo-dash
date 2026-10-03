@@ -64,6 +64,9 @@ export async function admobCallback(request: Request) {
   const keyId = p.get("key_id");
   if (!keyId || !/^\d+$/.test(keyId) || !p.has("signature")) throw new ApiError(400, "Callback inválido.");
   if (!verifyQuery(raw, await googleKey(keyId))) throw new ApiError(403, "Assinatura inválida.");
+  // The AdMob console probe uses a placeholder unit and never grants currency.
+  // Signature verification above is mandatory even for this no-op response.
+  if (p.get("ad_unit") === "1234567890" && !p.get("custom_data")) return { ignored: true, test: true };
   if (p.get("ad_unit") !== adUnit && p.get("ad_unit") !== adUnit.split("/")[1]) throw new ApiError(403, "Unidade de anúncio inválida.");
   const token = p.get("custom_data");
   if (!token) return { ignored: true }; // Revive uses the same unit, with no daily reward token.
