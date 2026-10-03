@@ -68,8 +68,10 @@ export async function limit(request: Request, scope: string, max: number, identi
   });
 }
 const email = z.email().max(254).transform(v => v.toLowerCase());
-const credentials = z.object({ email, password: z.string().min(8).max(128) });
-const registration = credentials.extend({ name: z.string().trim().min(1).max(16), initials: z.string().regex(/^[a-zA-Z]{3}$/).transform(v => v.toUpperCase()), avatar: z.enum(["boy", "girl"]) });
+// Login verifies the stored hash, including administratively created test accounts.
+// The eight-character minimum remains mandatory for public registration.
+const credentials = z.object({ email, password: z.string().min(1).max(128) });
+const registration = credentials.extend({ password: z.string().min(8).max(128), name: z.string().trim().min(1).max(16), initials: z.string().regex(/^[a-zA-Z]{3}$/).transform(v => v.toUpperCase()), avatar: z.enum(["boy", "girl"]) });
 export async function register(request: Request, body: unknown) {
   const data = registration.parse(body);
   await limit(request, "register", 10);
