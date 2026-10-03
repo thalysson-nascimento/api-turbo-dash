@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0",
-    "build": "node scripts/prisma.mjs generate && next build",
-    "build:local": "node scripts/prisma.mjs generate --schema prisma/local/schema.prisma && next build",
-    "start": "next start --hostname 0.0.0.0",
-    "db:local": "node scripts/prisma.mjs generate --schema prisma/local/schema.prisma && node scripts/prisma.mjs migrate deploy --schema prisma/local/schema.prisma && node scripts/seed.mjs",
-    "db:deploy": "node scripts/prisma.mjs generate && node scripts/prisma.mjs migrate deploy && node scripts/seed.mjs",
-    "test": "node --test tests/api.test.mjs",
-    "typecheck": "tsc --noEmit"
+    "dev": "node scripts/run.cjs node_modules/next/dist/bin/next dev --hostname 0.0.0.0",
+    "build": "node scripts/run.cjs scripts/prisma.mjs generate && node scripts/run.cjs node_modules/next/dist/bin/next build",
+    "build:local": "node scripts/run.cjs scripts/prisma.mjs generate --schema prisma/local/schema.prisma && node scripts/run.cjs node_modules/next/dist/bin/next build",
+    "start": "node scripts/run.cjs node_modules/next/dist/bin/next start --hostname 0.0.0.0",
+    "db:local": "node scripts/run.cjs scripts/prisma.mjs generate --schema prisma/local/schema.prisma && node scripts/run.cjs scripts/prisma.mjs migrate deploy --schema prisma/local/schema.prisma && node scripts/run.cjs scripts/seed.mjs",
+    "db:deploy": "node scripts/run.cjs scripts/prisma.mjs generate && node scripts/run.cjs scripts/prisma.mjs migrate deploy && node scripts/run.cjs scripts/seed.mjs",
+    "test": "node scripts/run.cjs --test tests/api.test.mjs tests/database-env.test.mjs",
+    "typecheck": "node scripts/run.cjs node_modules/typescript/bin/tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",

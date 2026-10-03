@@ -6,6 +6,8 @@ API em Next.js 16 (App Router), TypeScript e Prisma 6.19.3. O jogo Unity está i
 
 Use Node.js 22 ou superior. O Node instalado originalmente neste computador é antigo; durante a implementação foi utilizado o Node 24 que acompanha o Codex.
 
+Os comandos npm agora selecionam automaticamente o Node compatível do Codex neste computador quando o Node padrão é antigo. Em outras máquinas, instale Node 22+ ou indique seu executável na variável `TURBO_DASH_NODE`. As credenciais devem ficar no `.env`, que é ignorado pelo Git; `.env.example` contém somente exemplos sem senha real.
+
 ```powershell
 npm install
 # Crie .env com esta variável para desenvolvimento:
