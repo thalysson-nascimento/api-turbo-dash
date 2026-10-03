@@ -112,3 +112,14 @@ O servidor exige uma corrida válida, progresso cumulativo e limites de score/mo
 A proteção de tentativas de login/cadastro usa contadores persistentes. Na Vercel, usa o IP encaminhado pela plataforma; fora dela é necessário adaptar a obtenção de IP ao proxy utilizado. Limpe periodicamente sessões e contadores expirados para manutenção do banco.
 
 Referências de implementação: [Route Handlers do Next.js](https://nextjs.org/docs/app/getting-started/route-handlers) e [relacionamentos do Prisma 6](https://docs.prisma.io/docs/orm/v6/prisma-schema/data-model/relations).
+
+
+## Recompensa diária por anúncios
+
+Migração preparada: `20261003000000_daily_ad_rewards`. Após publicar e aplicar as migrações, configurar a verificação no servidor (SSV) da unidade `ca-app-pub-8691674404508428/1406515156` com a URL `https://api-turbo-dash.vercel.app/api/v1/ads/admob/ssv`.
+
+Apenas callbacks com assinatura Google válida contam para as cinco exibições. O quinto evento credita 5.000 moedas uma vez por dia por conta, com dia definido em `America/Fortaleza`. O cliente não decide o saldo, quantidade assistida ou data. Cada tentativa expira em dez minutos; callbacks atrasados são aceitos se o horário assinado estiver dentro da tentativa. Cancelamentos não contam, mas uma confirmação Google legítima recebida depois de um cancelamento local continua válida. O limite diário e o crédito são transacionais.
+
+Rotas autenticadas: `GET rewards/daily`, `POST rewards/daily/start` (`requestId`), `POST rewards/daily/cancel` (`token`). Não permitir um novo anúncio enquanto `pending` for verdadeiro. A verificação `GET ads/admob/ssv` é pública e autenticada pela assinatura ECDSA.
+
+`npm run test:rewards` prepara exclusivamente um banco SQLite em `integration-staging/daily-test.db` e testa assinatura, adulteração, cancelamento, repetição concorrente, quinto crédito, sexto anúncio bloqueado e renovação diária. Não usa o banco configurado em `.env`.

@@ -11,8 +11,8 @@ const items = [
   ['magnet','Ímã de Moedas','Atrai moedas próximas por 15 segundos.',2500,3,15],
   ['double','Moedas em Dobro','Dobra a coleta durante 20 segundos.',6000,4,20],
   ['slow','Tempo Lento','Desacelera a aproximação do trânsito por 6 segundos.',4500,5,6],
-  ['ghost','Modo Fantasma','Atravesse o trânsito por 5 segundos.',7000,6,5],
-  ['pulse','Pulso Livre','Remove o trânsito próximo do seu carro.',5000,7,0],
+  ['ghost','Modo Fantasma','Atravesse o trânsito por 8 segundos.',7000,6,8],
+  ['pulse','Pulso Livre','Libera 50 metros da pista com uma onda de energia.',5000,7,0],
 ];
 try {
   for (const [id,name,description,price,art,duration] of items) {

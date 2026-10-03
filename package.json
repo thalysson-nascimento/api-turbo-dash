@@ -10,7 +10,8 @@
     "db:local": "node scripts/run.cjs scripts/prisma.mjs generate --schema prisma/local/schema.prisma && node scripts/run.cjs scripts/prisma.mjs migrate deploy --schema prisma/local/schema.prisma && node scripts/run.cjs scripts/seed.mjs",
     "db:deploy": "node scripts/run.cjs scripts/prisma.mjs generate && node scripts/run.cjs scripts/prisma.mjs migrate deploy && node scripts/run.cjs scripts/seed.mjs",
     "test": "node scripts/run.cjs --test tests/api.test.mjs tests/database-env.test.mjs",
-    "typecheck": "node scripts/run.cjs node_modules/typescript/bin/tsc --noEmit"
+    "typecheck": "node scripts/run.cjs node_modules/typescript/bin/tsc --noEmit",
+    "test:rewards": "node scripts/run.cjs scripts/test-rewards.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
@@ -25,7 +26,9 @@
     "prisma": "6.19.3",
     "typescript": "^5.9.0"
   },
-  "overrides": { "deepmerge-ts": "^8.0.0" },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
+  },
   "engines": {
     "node": ">=22"
   }

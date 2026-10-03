@@ -1,3 +1,4 @@
+import { admobCallback, dailyStatus, startDaily, cancelDaily } from "@/lib/ad-rewards";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { ApiError, authenticate, checkpoint, consume, limit, login, player, purchase, register, startRun } from "@/lib/api";
@@ -31,6 +32,7 @@ async function handle(request: Request, context: { params: Promise<{ path: strin
     let result: unknown;
     let status = 200;
     if (method === "GET" && path === "health") { await db.$queryRaw`SELECT 1`; result = { status: "ok" }; }
+    else if (method === "GET" && path === "ads/admob/ssv") result = await admobCallback(request);
     else if (method === "POST" && path === "auth/register") { result = await register(request, body); status = 201; }
     else if (method === "POST" && path === "auth/login") result = await login(request, body);
     else if (method === "GET" && path === "store") result = { items: await db.product.findMany({ where: { active: true }, orderBy: { art: "asc" } }), coinPacks: [5000, 10000, 25000, 50000] };
@@ -42,6 +44,9 @@ async function handle(request: Request, context: { params: Promise<{ path: strin
       await limit(request, "player", 500, session.userId);
       if (method === "GET" && path === "me") result = { player: await player(session.userId) };
       else if (method === "POST" && path === "auth/logout") { await db.session.deleteMany({ where: { id: session.id } }); result = { success: true }; }
+      else if (method === "GET" && path === "rewards/daily") result = await dailyStatus(session.userId);
+      else if (method === "POST" && path === "rewards/daily/start") result = await startDaily(session.userId, body);
+      else if (method === "POST" && path === "rewards/daily/cancel") result = await cancelDaily(session.userId, body);
       else if (method === "POST" && path === "store/purchases") result = await purchase(session.userId, body);
       else if (method === "POST" && path === "runs/start") result = await startRun(session.userId, body);
       else if (method === "POST" && path === "runs/checkpoint") result = await checkpoint(session.userId, body);

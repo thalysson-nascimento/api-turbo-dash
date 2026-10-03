@@ -19,6 +19,7 @@ model User {
   inventory Inventory[]
   purchases Purchase[]
   runs Run[]
+  dailyAdRewards DailyAdReward[]
 }
 model Session {
   id String @id @default(cuid())
@@ -107,4 +108,25 @@ model RateLimit {
   key String @id
   count Int @default(1)
   expiresAt DateTime
+}
+
+model DailyAdReward {
+  userId String
+  day String
+  watched Int @default(0)
+  claimed Boolean @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attempts AdRewardAttempt[]
+  @@id([userId, day])
+}
+model AdRewardAttempt {
+  tokenHash String @id
+  userId String
+  day String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  cancelled Boolean @default(false)
+  transactionId String? @unique
+  daily DailyAdReward @relation(fields: [userId, day], references: [userId, day], onDelete: Cascade)
+  @@index([userId, day])
 }
