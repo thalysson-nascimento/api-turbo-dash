@@ -1,0 +1,32 @@
+{
+  "name": "api-turbo-dash",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "prisma generate && next build",
+    "build:local": "prisma generate --schema prisma/local/schema.prisma && next build",
+    "start": "next start --hostname 0.0.0.0",
+    "db:local": "prisma generate --schema prisma/local/schema.prisma && prisma migrate deploy --schema prisma/local/schema.prisma && node scripts/seed.mjs",
+    "db:deploy": "prisma generate && prisma migrate deploy && node scripts/seed.mjs",
+    "test": "node --test tests/api.test.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "next": "^16.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "prisma": "6.19.3",
+    "typescript": "^5.9.0"
+  },
+  "overrides": { "deepmerge-ts": "^8.0.0" },
+  "engines": {
+    "node": ">=22"
+  }
+}

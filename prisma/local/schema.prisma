@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  passwordHash String
+  name String
+  initials String
+  avatar String
+  createdAt DateTime @default(now())
+  wallet Wallet?
+  stats PlayerStats?
+  sessions Session[]
+  inventory Inventory[]
+  purchases Purchase[]
+  runs Run[]
+}
+model Session {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+model Wallet {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance Int @default(0)
+}
+model PlayerStats {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bestScore Int @default(0)
+  totalRuns Int @default(0)
+  totalDistance Int @default(0)
+  totalCoins Int @default(0)
+  @@index([bestScore])
+}
+model Product {
+  id String @id
+  name String
+  description String
+  price Int
+  art Int
+  duration Float
+  active Boolean @default(true)
+  inventory Inventory[]
+  purchases Purchase[]
+  uses BoosterUse[]
+}
+model Inventory {
+  userId String
+  itemId String
+  quantity Int @default(0)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Product @relation(fields: [itemId], references: [id])
+  @@id([userId, itemId])
+  @@index([itemId])
+}
+model Purchase {
+  id String @id @default(cuid())
+  userId String
+  requestId String
+  itemId String
+  price Int
+  balance Int
+  quantity Int
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Product @relation(fields: [itemId], references: [id])
+  @@unique([userId, requestId])
+  @@index([itemId])
+}
+model Run {
+  id String @id @default(cuid())
+  userId String
+  requestId String
+  startedAt DateTime @default(now())
+  endedAt DateTime?
+  score Int @default(0)
+  coins Int @default(0)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  uses BoosterUse[]
+  @@unique([userId, requestId])
+  @@index([userId, endedAt])
+}
+model BoosterUse {
+  id String @id @default(cuid())
+  runId String
+  itemId String
+  requestId String
+  quantity Int
+  createdAt DateTime @default(now())
+  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)
+  item Product @relation(fields: [itemId], references: [id])
+  @@unique([runId, requestId])
+  @@index([itemId])
+}
+model RateLimit {
+  key String @id
+  count Int @default(1)
+  expiresAt DateTime
+}
